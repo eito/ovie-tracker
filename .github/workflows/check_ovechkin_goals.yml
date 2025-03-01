@@ -2,7 +2,7 @@ name: Check Ovechkin Goals
 
 on:
   schedule:
-     - cron: '* 23,24,25,26 3 3 *'
+     - cron: '* 23 3 3 *'
      - cron: '* 0,1,2 4 3 *'
      - cron: '* 0,1,2,3 6 3 *'
      - cron: '* 0,1,2,3 8 3 *'
