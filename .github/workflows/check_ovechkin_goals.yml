@@ -39,6 +39,9 @@ on:
 
   workflow_dispatch: # Allows manual execution
 
+permissions:
+  contents: write
+
 jobs:
   check-goals:
     runs-on: ubuntu-latest
