@@ -181,5 +181,5 @@ if __name__ == "__main__":
             print("Goal detected!")        
     else:
         print("Capitals are not playing right now.")
-    # generate_cron_schedule_for_remaining_games()
+    generate_cron_schedule_for_remaining_games()
     # get_todays_game()

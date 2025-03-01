@@ -1,8 +1,8 @@
 name: Check Ovechkin Goals
 
-on:
-  schedule:
-    - cron: "*/1 * * * *" # Runs every minute
+# on:
+#  schedule:
+#    - cron: "*/1 * * * *" # Runs every minute
 
   workflow_dispatch: # Allows manual execution
 
