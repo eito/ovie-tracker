@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 import json
 import os
-import pytz
 import requests
 
 NHL_API_URL = os.getenv("NHL_API_URL")
@@ -83,11 +82,6 @@ def is_date_past(date):
 
 def convert_utc_to_pst(date):
     return date.astimezone(timezone('US/Pacific'))
-
-def utc_to_local(utc_dt):
-    local_tz = pytz.timezone('US/Pacific') # Replace with your actual timezone, e.g., 'America/Los_Angeles'
-    local_dt = utc_dt.replace(tzinfo=timezone.utc).astimezone(local_tz)
-    return local_dt
 
 def generate_cron_schedule_for_remaining_games():
     # 1/5 3-6 3 3 * 
@@ -183,3 +177,5 @@ if __name__ == "__main__":
         print("Capitals are not playing right now.")
     generate_cron_schedule_for_remaining_games()
     # get_todays_game()
+
+
