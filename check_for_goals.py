@@ -91,7 +91,7 @@ def generate_cron_schedule_for_remaining_games():
         # game_date = datetime.strptime(game["gameDate"], "%Y-%m-%d")
         game_date = datetime.strptime(game["startTimeUTC"], "%Y-%m-%dT%H:%M:%SZ")
         cron_date = f"1/5 {game_date.hour}-{game_date.hour+3} {game_date.day} {game_date.month} *"
-        print(f"{cron_date} {game_id}: {game_date}")
+        print(f"{cron_date}")
 
 def get_scheduled_games():
     """reads the schedule from schedule.json or fetches it from the NHL API."""
@@ -175,7 +175,5 @@ if __name__ == "__main__":
             print("Goal detected!")        
     else:
         print("Capitals are not playing right now.")
-    generate_cron_schedule_for_remaining_games()
+    # generate_cron_schedule_for_remaining_games()
     # get_todays_game()
-
-
