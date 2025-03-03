@@ -9,6 +9,7 @@ OVECHKIN_PLAYER_ID = 8471214  # Alex Ovechkin's player ID
 SCHEDULE_URL = "https://api-web.nhle.com/v1/club-schedule-season/WSH/20242025"
 PLAY_BY_PLAY_FORMAT = "https://api-web.nhle.com/v1/gamecenter/{game_id}/play-by-play"
 GOALS_AT_START_OF_YEAR = 853
+GRETZKY_GOALS = 894
 
 GOAL_STATE_FILE = "goal_state.json"
 SCHEDULE_FILE = "schedule.json"
@@ -39,9 +40,9 @@ def x_client():
         access_token_secret=X_API_ACCESS_TOKEN_SECRET
     )
 
-def post_to_x(goal_number, period, goal_time):
+def post_to_x(goal_number, period, goal_time, team_against):
     """Posts a tweet when Ovechkin scores."""
-    tweet_text = f"🚨 Ovechkin has scored goal #{goal_number} at {goal_time} in period {period}! 🚨 #ALLCAPS #NHL"
+    tweet_text = comment_to_post(goal_number, period, goal_time, team_against)
 
     try:
         response = x_client().create_tweet(text=tweet_text)
@@ -55,6 +56,7 @@ TODO: check out to determine if a goal was disallowed and update GOAL_STATE_FILE
 - generate a GIF to post to comment that shows the goal happening?
 - post notification of event to Argus so you could watch it?
 - post link to goal if present: highlightClipSharingUrl
+- detect from hist office? normalized lower left side?
 """
 
 DEBUG=False
@@ -73,9 +75,16 @@ def write_last_goal(goal_number):
     with open(GOAL_STATE_FILE, "w") as f:
         json.dump({"last_goal": goal_number}, f)
 
-def post_github_comment(goal_number, period, goal_time):
+def comment_to_post(goal_number, period, goal_time, team_against):
+    goals_to_break_record=(GRETZKY_GOALS + 1 - goal_number)
+    if goals_to_break_record == 0:
+        return f"🚨 Ovechkin has passed Wayne Gretzky for most goals all-time! Goal #{goal_number} @ {goal_time} in period {period} against the {team_against}! 🚨 #ALLCAPS #NHL #Gr8Chase"
+    else:
+        return f"🚨 Ovechkin has scored goal #{goal_number} @ {goal_time} in period {period} against the {team_against}! 🚨 #ALLCAPS #NHL #Gr8Chase"
+
+def post_github_comment(goal_number, period, goal_time, team_against):
     """Posts a comment on GitHub."""
-    comment = f"🚨 Ovechkin has scored his **{goal_number}** goal at **{goal_time}** in period {period}! 🚨"
+    comment = comment_to_post(goal_number, period, goal_time, team_against)
     headers = {
         "Authorization": f"token {GITHUB_TOKEN}",
         "Accept": "application/vnd.github.v3+json"
@@ -92,14 +101,14 @@ def post_github_comment(goal_number, period, goal_time):
     else:
         print(f"Failed to post comment: {response.text}")
 
-def check_and_notify(goal_number, period, goal_time):
+def check_and_notify(goal_number, period, goal_time, team_against):
     """Check if the goal is new and notify."""
     last_goal = read_last_goal()
     if goal_number > last_goal:
         total = goal_number + GOALS_AT_START_OF_YEAR
         print(f"New goal detected: {goal_number}, {total} total")
-        post_github_comment(total, period, goal_time)
-        post_to_x(total, period, goal_time)
+        post_github_comment(total, period, goal_time, team_against)
+        post_to_x(total, period, goal_time, team_against)
         write_last_goal(total)
         return True
     else:
@@ -206,7 +215,10 @@ def check_ovechkin_goals(game_id):
                 goal_number = play["details"]["scoringPlayerTotal"]
                 period = play["periodDescriptor"]["number"]
                 goal_time = play["timeInPeriod"]
-                new_goal = check_and_notify(goal_number, period, goal_time)
+                team_against=data["awayTeam"]["commonName"]["default"] 
+                if team_against == "Capitals":
+                    team_against=data["homeTeam"]["commonName"]["default"]
+                new_goal = check_and_notify(goal_number, period, goal_time, team_against)
     return new_goal
 
 if __name__ == "__main__":
