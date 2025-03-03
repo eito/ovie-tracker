@@ -31,7 +31,7 @@ X_API_URL = "https://api.twitter.com/2/tweets"
 
 def x_client():
     # Authenticate with OAuth 1.0a Context (Required for `tweet.write`)
-    client = tweepy.Client(
+    return tweepy.Client(
         consumer_key=X_API_KEY,
         consumer_secret=X_API_KEY_SECRET,
         bearer_token=X_API_BEARER_TOKEN,
