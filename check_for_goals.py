@@ -55,7 +55,6 @@ TODO: check out to determine if a goal was disallowed and update GOAL_STATE_FILE
 - generate a GIF to post to comment that shows the goal happening?
 - post notification of event to Argus so you could watch it?
 - post link to goal if present: highlightClipSharingUrl
-- store schedule.json since it's fixed?
 """
 
 DEBUG=False
@@ -146,6 +145,16 @@ def get_todays_game():
             return game["id"]        
     return None
 
+def post_initial_tweet():
+    tweet_text = f"🚨 Ovechkin Goal Tracker Test Tweet 🚨"
+
+    try:
+        response = x_client().create_tweet(text=tweet_text)
+        print(f"✅ Tweet posted successfully! {response.data}")
+    except tweepy.TweepyException as e:
+        print(f"❌ Failed to post tweet: {e}")
+
+    
 """
  {
       "eventId": 1067,
@@ -210,3 +219,4 @@ if __name__ == "__main__":
         print("Capitals are not playing right now.")
     # generate_cron_schedule_for_remaining_games()
     # get_todays_game()
+    post_initial_tweet()
