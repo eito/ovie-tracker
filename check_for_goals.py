@@ -2,8 +2,8 @@ from datetime import datetime, timezone
 import json
 import os
 import requests
+import tweepy
 
-NHL_API_URL = os.getenv("NHL_API_URL")
 CAPITALS_TEAM_ID = 15  # Washington Capitals team ID in the NHL API
 OVECHKIN_PLAYER_ID = 8471214  # Alex Ovechkin's player ID
 SCHEDULE_URL = "https://api-web.nhle.com/v1/club-schedule-season/WSH/20242025"
@@ -12,11 +12,43 @@ GOALS_AT_START_OF_YEAR = 853
 
 GOAL_STATE_FILE = "goal_state.json"
 SCHEDULE_FILE = "schedule.json"
+
+# Github API
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 REPO_OWNER = os.getenv("REPO_OWNER")
 REPO_NAME = os.getenv("REPO_NAME")
-THREADS_WEBHOOK_URL = os.getenv("THREADS_WEBHOOK_URL")
 GITHUB_API_URL = f"https://api.github.com/repos/{os.getenv('REPO_OWNER')}/{os.getenv('REPO_NAME')}/issues/1/comments"
+
+# X API Credentials from GitHub Secrets
+X_API_KEY = os.getenv("X_API_KEY")
+X_API_KEY_SECRET = os.getenv("X_API_KEY_SECRET")
+X_API_BEARER_TOKEN = os.getenv("X_API_BEARER_TOKEN")
+X_API_ACCESS_TOKEN = os.getenv("X_API_ACCESS_TOKEN")
+X_API_ACCESS_TOKEN_SECRET = os.getenv("X_API_ACCESS_TOKEN_SECRET")
+
+# X API Endpoint for posting tweets
+X_API_URL = "https://api.twitter.com/2/tweets"
+
+def x_client():
+    # Authenticate with OAuth 1.0a Context (Required for `tweet.write`)
+    client = tweepy.Client(
+        consumer_key=X_API_KEY,
+        consumer_secret=X_API_KEY_SECRET,
+        bearer_token=X_API_BEARER_TOKEN,
+        access_token=X_API_ACCESS_TOKEN,
+        access_token_secret=X_API_ACCESS_TOKEN_SECRET
+    )
+
+def post_to_x(goal_number, period, goal_time):
+    """Posts a tweet when Ovechkin scores."""
+    tweet_text = f"🚨 Ovechkin has scored goal #{goal_number} at {goal_time} in period {period}! 🚨 #ALLCAPS #NHL"
+
+    try:
+        response = x_client().create_tweet(text=tweet_text)
+        print(f"✅ Tweet posted successfully! {response.data}")
+    except tweepy.TweepyException as e:
+        print(f"❌ Failed to post tweet: {e}")
+
 
 """
 TODO: check out to determine if a goal was disallowed and update GOAL_STATE_FILE, delete comment
@@ -68,6 +100,7 @@ def check_and_notify(goal_number, period, goal_time):
         total = goal_number + GOALS_AT_START_OF_YEAR
         print(f"New goal detected: {goal_number}, {total} total")
         post_github_comment(total, period, goal_time)
+        post_to_x(total, period, goal_time)
         write_last_goal(total)
         return True
     else:

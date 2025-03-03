@@ -55,7 +55,7 @@ jobs:
           python-version: '3.x'
 
       - name: Install Dependencies
-        run: pip install requests
+        run: pip install requests tweepy
 
       - name: Run Goal Checker Script
         env:
