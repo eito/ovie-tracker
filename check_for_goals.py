@@ -219,4 +219,4 @@ if __name__ == "__main__":
         print("Capitals are not playing right now.")
     # generate_cron_schedule_for_remaining_games()
     # get_todays_game()
-    post_initial_tweet()
+    # post_initial_tweet()
