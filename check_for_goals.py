@@ -104,8 +104,8 @@ def post_github_comment(goal_number, period, goal_time, team_against):
 def check_and_notify(goal_number, period, goal_time, team_against):
     """Check if the goal is new and notify."""
     last_goal = read_last_goal()
-    if goal_number > last_goal:
-        total = goal_number + GOALS_AT_START_OF_YEAR
+    total = goal_number + GOALS_AT_START_OF_YEAR
+    if total > last_goal:
         print(f"New goal detected: {goal_number}, {total} total")
         post_github_comment(total, period, goal_time, team_against)
         post_to_x(total, period, goal_time, team_against)
