@@ -119,7 +119,7 @@ def check_and_notify(goal_number, period, goal_time, team_against):
 
 def is_today(date): 
     print(f"checking if date {date.date()} is now", datetime.now().date())
-    end_of_game=date + timedelta(hours=5)
+    end_of_game=date + timedelta(hours=8)
     return date <= datetime.now() <= end_of_game
 
 def is_date_past(date):
