@@ -107,6 +107,8 @@ def check_and_notify(goal_number, period, goal_time, team_against):
     total = goal_number + GOALS_AT_START_OF_YEAR
     if total > last_goal:
         print(f"New goal detected: {goal_number}, {total} total")
+        if DEBUG:
+            return True
         post_github_comment(total, period, goal_time, team_against)
         post_to_x(total, period, goal_time, team_against)
         write_last_goal(total)
@@ -116,6 +118,7 @@ def check_and_notify(goal_number, period, goal_time, team_against):
         return False
 
 def is_today(date): 
+    print("checking if date is now", datetime.now())
     return date.date() == datetime.now().date()
 
 def is_date_past(date):
