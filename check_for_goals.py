@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import json
 import os
 import requests
@@ -118,8 +118,9 @@ def check_and_notify(goal_number, period, goal_time, team_against):
         return False
 
 def is_today(date): 
-    print(f"checking if date {date.date()} is now", datetime.now())
-    return date.date() == datetime.now().date()
+    print(f"checking if date {date.date()} is now", datetime.now().date())
+    end_of_game=date + timedelta(hours=5)
+    return date <= datetime.now() <= end_of_game
 
 def is_date_past(date):
     return date.date() < datetime.now().date()
